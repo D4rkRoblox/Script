@@ -2,61 +2,72 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local AutoFarming = {}
 
-local UpgradeRemote = ReplicatedStorage
-	:WaitForChild("CatCatNetworkEvents_v1")
-	:WaitForChild("Cats_Upgrade")
+local NetworkFolder = ReplicatedStorage:WaitForChild("CatCatNetworkEvents_v1")
+local UpgradeRemote = NetworkFolder:WaitForChild("Cats_Upgrade")
 
 local Cats = {
 	"Domo Cat",
 	"VIP",
-	"Orange",
+	"Orange"
 }
 
-local AutoUpgradeConnection
+local AutoUpgradeThread = nil
 
 function AutoFarming.Create(Tab)
-	local Box = Tab:AddLeftGroupbox("Cat Upgrader")
+	local CatUpgrader = Tab:AddLeftGroupbox("Cat Upgrader")
 
-	Box:AddDropdown("SelectedCat", {
+	CatUpgrader:AddDropdown("SelectedCat", {
 		Values = Cats,
 		Default = Cats[1],
 		Multi = false,
 		Text = "Select Cat",
 	})
 
-	Box:AddButton("Upgrade Selected Cat", function()
-		local selectedCat = Options.SelectedCat.Value
+	CatUpgrader:AddButton("Upgrade Selected Cat", function()
+		local SelectedCat = Options.SelectedCat.Value
 
-		if not selectedCat then
+		if not SelectedCat then
 			return
 		end
 
-		UpgradeRemote:InvokeServer("Cats_Upgrade", selectedCat)
+		local Success, Result = pcall(function()
+			return UpgradeRemote:InvokeServer("Cats_Upgrade", SelectedCat)
+		end)
+
+		if not Success then
+			warn("Upgrade failed:", Result)
+		end
 	end)
 
-	Box:AddToggle("AutoUpgrade", {
+	CatUpgrader:AddToggle("AutoUpgrade", {
 		Text = "Auto Upgrade",
 		Default = false,
 
-		Callback = function(enabled)
-			if AutoUpgradeConnection then
-				task.cancel(AutoUpgradeConnection)
-				AutoUpgradeConnection = nil
+		Callback = function(Value)
+			if AutoUpgradeThread then
+				task.cancel(AutoUpgradeThread)
+				AutoUpgradeThread = nil
 			end
 
-			if not enabled then
+			if not Value then
 				return
 			end
 
-			AutoUpgradeConnection = task.spawn(function()
+			AutoUpgradeThread = task.spawn(function()
 				while true do
-					local selectedCat = Options.SelectedCat.Value
+					local SelectedCat = Options.SelectedCat.Value
 
-					if selectedCat then
-						UpgradeRemote:InvokeServer(
-							"Cats_Upgrade",
-							selectedCat
-						)
+					if SelectedCat then
+						local Success, Result = pcall(function()
+							return UpgradeRemote:InvokeServer(
+								"Cats_Upgrade",
+								SelectedCat
+							)
+						end)
+
+						if not Success then
+							warn("Auto upgrade failed:", Result)
+						end
 					end
 
 					task.wait(1)
