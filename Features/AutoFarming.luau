@@ -3,12 +3,14 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AutoFarming = {}
 
 local NetworkFolder = ReplicatedStorage:WaitForChild("CatCatNetworkEvents_v1")
-local UpgradeRemote = NetworkFolder:WaitForChild("Cats_Upgrade")
+local UpgradeRemote = NetworkFolder:WaitForChild("RemoteFunction")
 
 local Cats = {
 	"Domo Cat",
 	"VIP",
-	"Orange"
+	"Orange",
+	"White",
+	"Black"
 }
 
 local AutoUpgradeThread = nil
@@ -20,7 +22,7 @@ function AutoFarming.Create(Tab)
 		Values = Cats,
 		Default = Cats[1],
 		Multi = false,
-		Text = "Select Cat",
+		Text = "Select Cat"
 	})
 
 	CatUpgrader:AddButton("Upgrade Selected Cat", function()
@@ -31,7 +33,10 @@ function AutoFarming.Create(Tab)
 		end
 
 		local Success, Result = pcall(function()
-			return UpgradeRemote:InvokeServer("Cats_Upgrade", SelectedCat)
+			return UpgradeRemote:InvokeServer(
+				"Cats_Upgrade",
+				SelectedCat
+			)
 		end)
 
 		if not Success then
@@ -73,7 +78,7 @@ function AutoFarming.Create(Tab)
 					task.wait(1)
 				end
 			end)
-		end,
+		end
 	})
 end
 
