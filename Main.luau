@@ -149,7 +149,7 @@ Community:AddButton("Copy Discord Invite", function()
 end)
 
 local AutoFarming = loadstring(game:HttpGet(
-	"https://raw.githubusercontent.com/D4rkRoblox/Script/main/Features/AutoFarming.luau"
+	"https://raw.githubusercontent.com/D4rkRoblox/Script/Features/AutoFarming.luau"
 ))()
 
 if AutoFarming and AutoFarming.Create then
@@ -157,7 +157,7 @@ if AutoFarming and AutoFarming.Create then
 end
 
 local SettingsModule = loadstring(game:HttpGet(
-	"https://raw.githubusercontent.com/D4rkRoblox/Script/main/UI/SettingsTab.luau"
+	"https://raw.githubusercontent.com/D4rkRoblox/Script/UI/SettingsTab.luau"
 ))()
 
 if type(SettingsModule) == "table" then
