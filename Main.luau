@@ -3,6 +3,8 @@ local Interface = loadstring(game:HttpGet(
 ))()
 
 local Library = Interface
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
 local Window = Library:CreateWindow({
 	Title = "Catploit",
@@ -16,22 +18,18 @@ local Window = Library:CreateWindow({
 	CornerRadius = 2
 })
 
-local LocalPlayer = game:GetService("Players").LocalPlayer
-
 local function GetExecutorInfo()
 	local Name = "Unknown"
 	local Version = "N/A"
 
 	if type(identifyexecutor) == "function" then
 		local Success, ExecutorName, ExecutorVersion = pcall(identifyexecutor)
-
 		if Success then
 			Name = ExecutorName or "Unknown"
 			Version = ExecutorVersion or "N/A"
 		end
 	elseif type(getexecutorname) == "function" then
 		local Success, ExecutorName = pcall(getexecutorname)
-
 		if Success then
 			Name = ExecutorName or "Unknown"
 		end
@@ -58,23 +56,17 @@ local function GetEnvironmentResults()
 	return Results
 end
 
-local Tabs = {
-	AutoFarming = Window:AddTab("Auto/Farming", "refresh-cw"),
-	Settings = Window:AddTab("Settings", "settings")
-}
-
 local InfoTab = Window:AddTab("Info", "user")
+local AutoFarmingTab = Window:AddTab("Auto/Farming", "refresh-cw")
+local SettingsTab = Window:AddTab("Settings", "settings")
 
 local User = InfoTab:AddLeftGroupbox("User Info")
 
-local ImageSize = Enum.ThumbnailSize.Size420x420
-local ImageType = Enum.ThumbnailType.HeadShot
-
 local ThumbnailSuccess, Content = pcall(function()
-	return game:GetService("Players"):GetUserThumbnailAsync(
+	return Players:GetUserThumbnailAsync(
 		LocalPlayer.UserId,
-		ImageType,
-		ImageSize
+		Enum.ThumbnailType.HeadShot,
+		Enum.ThumbnailSize.Size420x420
 	)
 end)
 
@@ -87,17 +79,19 @@ end
 User:AddLabel("ID: " .. LocalPlayer.Name, true)
 User:AddLabel("User ID: " .. tostring(LocalPlayer.UserId), true)
 
+local Credits = InfoTab:AddRightGroupbox("Credits")
+
 local CreditsList = {
 	"<font color='rgb(0, 255, 255)'>Catploit — Main Script</font>",
-	"<font color='rgb(255, 165, 0)'>AbysallContinued — Original Info Tab Structure</font>",
+	"<font color='rgb(255, 165, 0)'>Original Info Tab Structure</font>",
 	"<font color='rgb(50, 205, 50)'>" .. LocalPlayer.Name .. " — For Using This Script</font>"
 }
-
-local Credits = InfoTab:AddRightGroupbox("Credits")
 
 for _, Credit in ipairs(CreditsList) do
 	Credits:AddLabel(Credit, true)
 end
+
+local Changelog = InfoTab:AddRightGroupbox("Changelog")
 
 local LatestChangelog = {
 	"10/4/2026",
@@ -106,20 +100,17 @@ local LatestChangelog = {
 	"<font color='rgb(255, 255, 0)'>~ Updated Catploit interface</font>"
 }
 
-local Changelog = InfoTab:AddRightGroupbox("Changelog")
-
 for _, Change in ipairs(LatestChangelog) do
 	Changelog:AddLabel(Change, true)
 end
 
 local ExecutorName, ExecutorVersion = GetExecutorInfo()
-
 local Executor = InfoTab:AddRightGroupbox("Executor Info")
 
 Executor:AddLabel("Name: " .. tostring(ExecutorName), true)
 Executor:AddLabel("Version: " .. tostring(ExecutorVersion), true)
 Executor:AddDivider()
-Executor:AddLabel("Test Result: ", true)
+Executor:AddLabel("Test Result:", true)
 
 for _, Result in ipairs(GetEnvironmentResults()) do
 	Executor:AddLabel(Result, true)
@@ -161,4 +152,20 @@ local AutoFarming = loadstring(game:HttpGet(
 	"https://raw.githubusercontent.com/D4rkRoblox/Script/main/Features/AutoFarming.luau"
 ))()
 
-AutoFarming.Create(Tabs.AutoFarming)
+if AutoFarming and AutoFarming.Create then
+	AutoFarming.Create(AutoFarmingTab)
+end
+
+local SettingsModule = loadstring(game:HttpGet(
+	"https://raw.githubusercontent.com/D4rkRoblox/Script/main/UI/SettingsTab.luau"
+))()
+
+if type(SettingsModule) == "table" then
+	if SettingsModule.Create then
+		SettingsModule.Create(SettingsTab, Library, Window)
+	elseif SettingsModule.Init then
+		SettingsModule.Init(SettingsTab, Library, Window)
+	end
+elseif type(SettingsModule) == "function" then
+	SettingsModule(SettingsTab, Library, Window)
+end
