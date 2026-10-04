@@ -13,12 +13,12 @@ local Window = Library:CreateWindow({
 	Center = true,
 	TabPadding = 3,
 	MenuFadeTime = 0,
-	CornerRadius = 2,
+	CornerRadius = 2
 })
 
 local Tabs = {
 	AutoFarming = Window:AddTab("Auto/Farming", "refresh-cw"),
-	Settings = Window:AddTab("Settings", "settings"),
+	Settings = Window:AddTab("Settings", "settings")
 }
 
 local AutoFarming = loadstring(game:HttpGet(
