@@ -5,8 +5,8 @@ local Interface = loadstring(game:HttpGet(
 local Library = Interface
 
 local Window = Library:CreateWindow({
-	Title = "DEIN NAME",
-	Footer = "DEIN FOOTER",
+	Title = "Catploit",
+	Footer = "Catploit",
 	NotifySide = "Right",
 	ShowCustomCursor = false,
 	AutoShow = true,
